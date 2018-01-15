@@ -37,8 +37,10 @@
 			<channel id="BasicHumidityLevel" typeId="BasicHumidityLevel" />
 			<channel id="HumiditySensor1" typeId="HumiditySensor1" />
 			<channel id="HumiditySensor2" typeId="HumiditySensor2" />
+			<channel id="CO2" typeId="CO2" />
 			<channel id="CO2High" typeId="CO2High" />
 			<channel id="CO2Low" typeId="CO2Low" />
+			<channel id="CO2SetPoint" typeId="CO2SetPoint" />
 			<channel id="CO2SetPointHigh" typeId="CO2SetPointHigh" />
 			<channel id="CO2SetPointLow" typeId="CO2SetPointLow" />
 			<channel id="AdjustmentIntervalMinutes" typeId="AdjustmentIntervalMinutes" />
@@ -279,6 +281,12 @@
 		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="CO2" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2</label>
+		<state min="0" max="2000" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="CO2High" advanced="true">
 		<item-type>Number</item-type>
 		<label>CO2High</label>
@@ -289,6 +297,12 @@
 		<item-type>Number</item-type>
 		<label>CO2Low</label>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CO2SetPoint" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2SetPoint</label>
+		<state min="0" max="2000" step="1" pattern="%d" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="CO2SetPointHigh" advanced="true">

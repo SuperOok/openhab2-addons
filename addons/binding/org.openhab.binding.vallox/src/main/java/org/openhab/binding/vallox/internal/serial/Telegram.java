@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Telegram {
 
+    private static final int RADIX_HEX = 16;
+
     private final Logger logger = LoggerFactory.getLogger(Telegram.class);
 
     private byte sender;
@@ -162,43 +164,47 @@ public class Telegram {
                 break;
             }
             case HUMIDITY: {
-                vallox.humidity = Byte.toUnsignedInt(value);
+                vallox.humidity = convertHumidity(value);
                 notifyChanged(listener, ValloxProperty.HUMIDITY);
                 break;
             }
             case BASIC_HUMIDITY_LEVEL: {
-                vallox.basicHumidityLevel = Byte.toUnsignedInt(value);
+                vallox.basicHumidityLevel = convertHumidity(value);
                 notifyChanged(listener, ValloxProperty.BASIC_HUMIDITY_LEVEL);
                 break;
             }
             case HUMIDITY_SENSOR1: {
-                vallox.humiditySensor1 = Byte.toUnsignedInt(value);
+                vallox.humiditySensor1 = convertHumidity(value);
                 notifyChanged(listener, ValloxProperty.HUMIDITY_SENSOR_1);
                 break;
             }
             case HUMIDITY_SENSOR2: {
-                vallox.humiditySensor2 = Byte.toUnsignedInt(value);
+                vallox.humiditySensor2 = convertHumidity(value);
                 notifyChanged(listener, ValloxProperty.HUMIDITY_SENSOR_2);
                 break;
             }
             case CO2_HIGH: {
                 vallox.cO2High = Byte.toUnsignedInt(value);
                 notifyChanged(listener, ValloxProperty.CO2_HIGH);
+                updateCO2(vallox, listener);
                 break;
             }
             case CO2_LOW: {
                 vallox.cO2Low = Byte.toUnsignedInt(value);
                 notifyChanged(listener, ValloxProperty.CO2_LOW);
+                updateCO2(vallox, listener);
                 break;
             }
             case CO2_SET_POINT_UPPER: {
                 vallox.cO2SetPointHigh = Byte.toUnsignedInt(value);
                 notifyChanged(listener, ValloxProperty.CO2_SETPOINT_HIGH);
+                updateCO2SetPoint(vallox, listener);
                 break;
             }
             case CO2_SET_POINT_LOWER: {
                 vallox.cO2SetPointLow = Byte.toUnsignedInt(value);
                 notifyChanged(listener, ValloxProperty.CO2_SETPOINT_LOW);
+                updateCO2SetPoint(vallox, listener);
                 break;
             }
             case FAN_SPEED_MAX: {
@@ -277,6 +283,40 @@ public class Telegram {
                 logger.debug("Unknown command received: {}", this);
             }
         }
+    }
+
+    private void updateCO2(ValloxStore vallox, Collection<ValueChangeListener> listener) {
+        int cO2High = vallox.cO2High;
+        int cO2Low = vallox.cO2Low;
+        
+        try {
+            String cO2AsString = byteToHex((byte)cO2High) + byteToHex((byte)cO2Low);
+            vallox.cO2 = Integer.parseInt(cO2AsString, 16);
+            notifyChanged(listener, ValloxProperty.CO2);
+        } catch (NumberFormatException e) {
+            logger.debug("error merging co2", e);
+        }
+    }
+    private void updateCO2SetPoint(ValloxStore vallox, Collection<ValueChangeListener> listener) {
+        int cO2High = vallox.cO2SetPointHigh;
+        int cO2Low = vallox.cO2SetPointLow;
+        
+        try {
+            String cO2AsString = byteToHex((byte)cO2High) + byteToHex((byte)cO2Low);
+            int hexAsInt = Integer.parseInt(cO2AsString, RADIX_HEX);
+            logger.debug("converting finished (cO2High={},cO2Low={},={} -> hexAsInt={})", cO2High, cO2Low, cO2AsString, 
+                    hexAsInt);
+            vallox.cO2SetPoint = hexAsInt;
+            notifyChanged(listener, ValloxProperty.CO2_SETPOINT);
+        } catch (NumberFormatException e) {
+            logger.debug("error merging co2", e);
+        }
+    }
+
+    private float convertHumidity(byte value) {
+        int index = Byte.toUnsignedInt(value);
+        
+        return (index - 51) / 2.04f;
     }
 
     private void notifyChanged(Collection<ValueChangeListener> listener, ValloxProperty prop) {

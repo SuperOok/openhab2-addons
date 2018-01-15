@@ -246,11 +246,17 @@ public class ValloxSerialHandler extends BaseThingHandler
             case CO2_ADJUST_STATE:
                 state = getOnOff(vs.cO2AdjustState);
                 break;
+            case CO2:
+                state = new DecimalType(vs.cO2);
+                break;
             case CO2_HIGH:
                 state = new DecimalType(vs.cO2High);
                 break;
             case CO2_LOW:
                 state = new DecimalType(vs.cO2Low);
+                break;
+            case CO2_SETPOINT:
+                state = new DecimalType(vs.cO2SetPoint);
                 break;
             case CO2_SETPOINT_HIGH:
                 state = new DecimalType(vs.cO2SetPointHigh);
