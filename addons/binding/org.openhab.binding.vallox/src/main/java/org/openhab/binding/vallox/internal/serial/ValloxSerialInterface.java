@@ -110,6 +110,15 @@ public class ValloxSerialInterface {
 
     public void reconnect() throws UnknownHostException, IOException {
         logger.debug("Trying to reconnect: {}:{}", host, port);
+
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                logger.error("error closing socket", e);
+            }
+        }
+
         connect(host, port);
     }
 
@@ -277,7 +286,7 @@ public class ValloxSerialInterface {
         telegram[2] = destination;
         telegram[3] = variable;
         telegram[4] = value;
-        telegram[5] = calculateChecksum(telegram);
+        telegram[5] = new ValloxChecksumCalculator().calculateChecksum(telegram);
 
         if (logger.isDebugEnabled()) { // avoid executing the byteToHex if no debug mode is active
             logger.debug("sending telegram: {} {} {} {} {} {}", Telegram.byteToHex(telegram[0]),
@@ -288,11 +297,14 @@ public class ValloxSerialInterface {
     }
 
     /**
-     * Send one telegram to the master unit.
-     * Example: send(Variable.FAN_SPEED.key, Telegram.convertBackFanSpeed((byte)4));
+     * Send one telegram to the master unit. Example: send(Variable.FAN_SPEED.key,
+     * Telegram.convertBackFanSpeed((byte)4));
      *
-     * @param variable one of the Variable keys in {@link Variable}}
-     * @param value the right binary coded value (see {@link Telegram} for some conversions)
+     * @param variable
+     *            one of the Variable keys in {@link Variable}}
+     * @param value
+     *            the right binary coded value (see {@link Telegram} for some
+     *            conversions)
      * @throws IOException
      */
     public void send(byte variable, byte value) throws IOException {
@@ -314,14 +326,6 @@ public class ValloxSerialInterface {
         }
     }
 
-    static byte calculateChecksum(byte[] pTelegram) {
-        int checksum = 0;
-        for (byte i = 0; i < pTelegram.length - 1; i++) {
-            checksum += pTelegram[i];
-        }
-        return (byte) (checksum % 256);
-    }
-
     /**
      * Start listening to telegrams on the serial interface. Stop if requested.
      */
@@ -335,7 +339,7 @@ public class ValloxSerialInterface {
                     logger.trace("Received message: {}", telegram);
                     telegram.updateStore(vallox, valueListener);
                 } catch (MalformedTelegramException e) {
-                    logger.warn("Issue receiving telegram. Discarding.", e);
+                    logger.debug("Issue receiving telegram. Discarding.", e);
                 } catch (InvalidRecepientException e) {
                     logger.debug("Issue receiving telegram. Discarding.", e);
                 } catch (InsufficientDataException e) {
@@ -349,10 +353,11 @@ public class ValloxSerialInterface {
                     if (sleep > 0) {
                         try {
                             Thread.sleep(sleep);
-                            sleep = 0; // reset sleep for the next telegram
                         } catch (InterruptedException e1) {
                             logger.error("Telegram listening thread interrupted.");
                             Thread.currentThread().interrupt();
+                        } finally {
+                            sleep = 0; // reset sleep for the next telegram
                         }
                     }
                 }
@@ -424,7 +429,8 @@ public class ValloxSerialInterface {
         int computedChecksum = (domain + sender + receiver + command + arg) & 0x00ff;
 
         if (checksum != computedChecksum) {
-            throw new MalformedTelegramException("Received Telegram has invalid checksum, ignoring telegram.");
+            throw new MalformedTelegramException("Received Telegram has invalid checksum (" + checksum + ", computed="
+                    + computedChecksum + "), ignoring telegram.");
         }
 
         // only read telegrams that are for us

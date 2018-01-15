@@ -104,6 +104,8 @@ public enum ValloxProperty {
     IN_EFFICIENCY("InEfficiency"),
     OUT_EFFICIENCY("OutEfficiency"),
     AVERAGE_EFFICIENCY("AverageEfficiency"),
+    CO2("CO2"), // VALLOX_VARIABLE_CO2
+    CO2_SETPOINT("CO2SetPoint"), // VALLOX_VARIABLE_CO2
 
     // virtual properties to be able to poll for this variable
     SELECT_STATUS("SelectStatus"),

@@ -36,13 +36,15 @@ public class ValloxStore {
     public boolean faultIndicator; // VALLOX_VARIABLE_SELECT
     public boolean serviceReminderIndicator; // VALLOX_VARIABLE_SELECT
 
-    public int humidity; // VALLOX_VARIABLE_HUMIDITY
-    public int basicHumidityLevel; // VALLOX_VARIABLE_BASIC_HUMIDITY_LEVEL
-    public int humiditySensor1; // VALLOX_VARIABLE_HUMIDITY_SENSOR1
-    public int humiditySensor2; // VALLOX_VARIABLE_HUMIDITY_SENSOR2
+    public float humidity; // VALLOX_VARIABLE_HUMIDITY
+    public float basicHumidityLevel; // VALLOX_VARIABLE_BASIC_HUMIDITY_LEVEL
+    public float humiditySensor1; // VALLOX_VARIABLE_HUMIDITY_SENSOR1
+    public float humiditySensor2; // VALLOX_VARIABLE_HUMIDITY_SENSOR2
 
+    public int cO2; // VALLOX_VARIABLE_CO2
     public int cO2High; // VALLOX_VARIABLE_CO2_HIGH
     public int cO2Low; // VALLOX_VARIABLE_CO2_LOW
+    public int cO2SetPoint; // VALLOX_VARIABLE_CO2_SET_POINT
     public int cO2SetPointHigh; // VALLOX_VARIABLE_CO2_SET_POINT_UPPER
     public int cO2SetPointLow; // VALLOX_VARIABLE_CO2_SET_POINT_LOWER
 
