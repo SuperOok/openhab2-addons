@@ -432,7 +432,7 @@ public class ValloxSerialInterface {
             return new Telegram((byte) sender, (byte) receiver, (byte) command, (byte) arg);
         }
         String msg = MessageFormat.format(
-                "Ignoring telegram not for us: sender: {}, receiver: {}, command: {}, arg: {}", sender, receiver,
+                "Ignoring telegram not for us: sender: {0}, receiver: {1}, command: {2}, arg: {3}", sender, receiver,
                 command, arg);
         throw new InvalidRecepientException(msg);
     }
